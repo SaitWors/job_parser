@@ -1,0 +1,64 @@
+vacancies/templates/vacancies/vacancy_list.html
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vacancies</title>
+</head>
+<body>
+    <h1>Vacancies</h1>
+    <form method="get">
+        <select name="filter">
+            <option value="name" {% if filter_type == 'name' %}selected{% endif %}>Name</option>
+            <option value="salary" {% if filter_type == 'salary' %}selected{% endif %}>Salary</option>
+        </select>
+        <input type="text" name="value" placeholder="Value">
+        <button type="submit">Filter</button>
+    </form>
+
+    <table>
+        <thead>
+            <tr>
+                {% if filter_type == 'name' %}
+                <th>Name</th>
+                <th>Link</th>
+                {% elif filter_type == 'salary' %}
+                <th>Salary From</th>
+                <th>Salary To</th>
+                <th>Link</th>
+                {% else %}
+                <th>ID</th>
+                <th>Name</th>
+                <th>Salary From</th>
+                <th>Salary To</th>
+                <th>Working Days</th>
+                <th>Link</th>
+                {% endif %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for vacancy in vacancies %}
+            <tr>
+                {% if filter_type == 'name' %}
+                <td>{{ vacancy.name }}</td>
+                <td><a href="{{ vacancy.url }}" target="_blank">View</a></td>
+                {% elif filter_type == 'salary' %}
+                <td>{{ vacancy.salary_from }}</td>
+                <td>{{ vacancy.salary_to }}</td>
+                <td><a href="{{ vacancy.url }}" target="_blank">View</a></td>
+                {% else %}
+                <td>{{ vacancy.hh_id }}</td>
+                <td>{{ vacancy.name }}</td>
+                <td>{{ vacancy.salary_from }}</td>
+                <td>{{ vacancy.salary_to }}</td>
+                <td>{{ vacancy.working_days }}</td>
+                <td><a href="{{ vacancy.url }}" target="_blank">View</a></td>
+                {% endif %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>
