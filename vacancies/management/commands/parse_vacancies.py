@@ -1,5 +1,3 @@
-# vacancies/management/commands/parse_vacancies.py
-
 import requests
 from django.core.management.base import BaseCommand
 from vacancies.models import Vacancy
@@ -22,7 +20,7 @@ class Command(BaseCommand):
                     'per_page': 100,
                     'only_with_salary': 'true' if filter_type == 'salary' else 'false',
                 }
-                req = requests.get('https://api.hh.ru/vacancies/', params).json()
+                req = requests.get('https://api.hh.ru/vacancies', params).json()
                 if 'items' in req.keys():
                     res.extend(req['items'])
                 print('|', end='')
@@ -37,8 +35,9 @@ class Command(BaseCommand):
         vacancies_data = get_vacancies(filter_type, filter_value, pages)
 
         # Сохранение данных в базу данных
+        new_vacancies = 0
         for vac in vacancies_data:
-            Vacancy.objects.update_or_create(
+            _, created = Vacancy.objects.update_or_create(
                 hh_id=vac['id'],
                 defaults={
                     'name': vac['name'],
@@ -48,5 +47,10 @@ class Command(BaseCommand):
                     'url': vac['alternate_url']
                 }
             )
+            if created:
+                new_vacancies += 1
 
-        self.stdout.write(self.style.SUCCESS('Data collected and filtered.'))
+        self.stdout.write(self.style.SUCCESS(f'Data collected and filtered. {new_vacancies} new vacancies added.'))
+
+
+

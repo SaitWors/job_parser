@@ -1,5 +1,3 @@
-vacancies/templates/vacancies/vacancy_list.html
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -16,6 +14,14 @@ vacancies/templates/vacancies/vacancy_list.html
         </select>
         <input type="text" name="value" placeholder="Value">
         <button type="submit">Filter</button>
+    </form>
+
+    <form id="run-parse-form" method="post" action="{% url 'run_parse_vacancies' %}">
+        {% csrf_token %}
+        <input type="hidden" name="filter" value="{{ filter_type }}">
+        <input type="hidden" name="value" value="{{ value }}">
+        <input type="number" name="pages" min="1" value="1"> <!-- Поле для ввода количества страниц -->
+        <button type="submit">Run Parse Vacancies</button>
     </form>
 
     <table>
