@@ -4,15 +4,32 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Vacancies</title>
+    <style>
+        #total-vacancies-display {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background-color: #f0f0f0;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            z-index: 1000;
+        }
+    </style>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
+    <div id="total-vacancies-display">
+        <p>Total vacancies: <span id="total-vacancies">{{ total_vacancies }}</span></p>
+    </div>
+
     <h1>Vacancies</h1>
-    <form method="get">
+    <form id="filter-form" method="get">
         <select name="filter">
             <option value="name" {% if filter_type == 'name' %}selected{% endif %}>Name</option>
             <option value="salary" {% if filter_type == 'salary' %}selected{% endif %}>Salary</option>
         </select>
-        <input type="text" name="value" placeholder="Value">
+        <input type="text" name="value" placeholder="Value" value="{{ value }}">
         <button type="submit">Filter</button>
     </form>
 
@@ -23,6 +40,10 @@
         <input type="number" name="pages" min="1" value="1"> <!-- Поле для ввода количества страниц -->
         <button type="submit">Run Parse Vacancies</button>
     </form>
+
+    <div id="status-message" style="display:none;">
+        <p>Updating database, please wait...</p>
+    </div>
 
     <table>
         <thead>
@@ -66,5 +87,25 @@
             {% endfor %}
         </tbody>
     </table>
+
+    <script>
+        $(document).ready(function() {
+            $('#run-parse-form').on('submit', function(e) {
+                e.preventDefault();
+                $('#status-message').show();
+                $.post($(this).attr('action'), $(this).serialize(), function(response) {
+                    $('#status-message').hide();
+                    $('#total-vacancies').text(response.total_vacancies);
+                    $('#total-vacancies-display').show();
+                });
+            });
+
+            // Показать элемент с количеством вакансий, если он был скрыт
+            const totalVacancies = $('#total-vacancies').text();
+            if (totalVacancies) {
+                $('#total-vacancies-display').show();
+            }
+        });
+    </script>
 </body>
 </html>
